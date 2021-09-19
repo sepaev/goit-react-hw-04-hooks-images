@@ -1,60 +1,49 @@
 import { PropTypes } from 'prop-types';
-import { Component } from 'react';
+import { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import toastOptions from '../../options/toast';
-import {
-  SearchBarHeader,
-  SearchForm,
-  SearchButton,
-  SearchButtonSpan,
-  SearchInput,
-} from './SearchBar.styled';
+import { SearchBarHeader, SearchForm, SearchButton, SearchButtonSpan, SearchInput } from './SearchBar.styled';
 
-class SearchBar extends Component {
-  state = {
-    query: '',
-  };
+function SearchBar({ onSubmit }) {
+  const [query, setQuery] = useState('');
 
-  handleQueryChange = e => {
-    this.setState({ query: e.currentTarget.value.toLowerCase() });
-  };
+  function handleQueryChange(e) {
+    const value = e.currentTarget.value.toLowerCase();
+    setQuery(value.trim());
+  }
 
-  handleSubmit = e => {
+  function handleSubmit(e) {
     e.preventDefault();
-    const query = this.state.query.trim();
-
     if (!query) {
       toast.error(`Please input search value.`, toastOptions);
       return;
     }
-    this.props.onSubmit(query);
-    this.setState({ query: '' });
-  };
-
-  render() {
-    return (
-      <SearchBarHeader>
-        <SearchForm onSubmit={this.handleSubmit}>
-          <SearchButton type='submit'>
-            <SearchButtonSpan>Search</SearchButtonSpan>
-          </SearchButton>
-
-          <SearchInput
-            className='SearchForm-input'
-            type='text'
-            autocomplete='off'
-            name='pictureName'
-            autoFocus
-            placeholder='Search images and photos'
-            value={this.state.query}
-            onChange={this.handleQueryChange}
-          />
-          <ToastContainer />
-        </SearchForm>
-      </SearchBarHeader>
-    );
+    onSubmit(query);
+    setQuery('');
   }
+
+  return (
+    <SearchBarHeader>
+      <SearchForm onSubmit={handleSubmit}>
+        <SearchButton type='submit'>
+          <SearchButtonSpan>Search</SearchButtonSpan>
+        </SearchButton>
+
+        <SearchInput
+          className='SearchForm-input'
+          type='text'
+          autocomplete='off'
+          name='pictureName'
+          autoFocus
+          placeholder='Search images and photos'
+          value={query}
+          onChange={handleQueryChange}
+        />
+        <ToastContainer />
+      </SearchForm>
+    </SearchBarHeader>
+  );
 }
 
 export default SearchBar;

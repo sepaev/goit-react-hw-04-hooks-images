@@ -18,7 +18,6 @@ function App() {
 
   const changeStatus = useCallback(
     (newStatus, message = '') => {
-      // alert(newStatus);
       if (message && message !== lastMessage) {
         toast.info(message, toastOptions);
         setLastMessage(message);

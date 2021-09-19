@@ -1,34 +1,34 @@
 import { PropTypes } from 'prop-types';
-import { Component } from 'react';
+import { useEffect } from 'react';
 import { OverlayDiv, ModalDiv, ModalImg } from './Modal.styled';
 
-class Modal extends Component {
-  onTapped = e => {
-    const { prev, next } = this.props.modalNeighbors;
+function Modal({ modalNeighborImages, exitFunc, changeNeighborImages }) {
+  const { curr, prev, next } = modalNeighborImages;
+  function onTapped(e) {
     e.preventDefault();
-    if (e.key === 'Escape') this.props.exitFunc();
-    if (e.key === 'ArrowLeft') this.props.changeNeighbors(prev.id);
-    if (e.key === 'ArrowRight') this.props.changeNeighbors(next.id);
-  };
-  componentDidMount() {
-    window.addEventListener('keydown', this.onTapped);
+    if (e.key === 'Escape') exitFunc();
+    if (e.key === 'ArrowLeft') changeNeighborImages(prev.id);
+    if (e.key === 'ArrowRight') changeNeighborImages(next.id);
   }
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onTapped);
+  useEffect(() => {
+    window.addEventListener('keydown', onTapped);
+
+    return function cleanup() {
+      window.removeEventListener('keydown', onTapped);
+    };
+  });
+
+  function onClickModal(e) {
+    if (e.target.nodeName === 'DIV') exitFunc();
   }
-  onClickModal = e => {
-    if (e.target.nodeName === 'DIV') this.props.exitFunc();
-  };
-  render() {
-    const { curr } = this.props.modalNeighbors;
-    return (
-      <OverlayDiv onClick={this.onClickModal}>
-        <ModalDiv>
-          <ModalImg src={curr.largeImageURL} alt={curr.tags} loading='lazy' />
-        </ModalDiv>
-      </OverlayDiv>
-    );
-  }
+
+  return (
+    <OverlayDiv onClick={onClickModal}>
+      <ModalDiv>
+        <ModalImg src={curr.largeImageURL} alt={curr.tags} loading='lazy' />
+      </ModalDiv>
+    </OverlayDiv>
+  );
 }
 
 export default Modal;
